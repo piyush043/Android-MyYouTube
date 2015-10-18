@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">My YouTube</string>
+    <string name="action_settings">Settings</string>
+    <string name="login">Login</string>
+    <string name="next">Next</string>
+    <string name="title_activity_main">Welcome User</string>
+    <string name="title_player_main">Video Player</string>
+    <string name="logout">Logout</string>
+    <string name="search">Search</string>
+
+    <string-array name="tabs">
+        <item>Search</item>
+        <item>Playlist</item>
+        <item>Favorites</item>
+    </string-array>
+
+</resources>
