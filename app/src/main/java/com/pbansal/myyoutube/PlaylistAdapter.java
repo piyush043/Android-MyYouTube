@@ -59,21 +59,21 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
             return 0;
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView icon;
-        TextView title, description, publishedDate, numberOfViews;
+        TextView title, description, publishedDate, numberOfVideos;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
+//            itemView.setOnClickListener(this);
             title = (TextView) itemView.findViewById(R.id.playlistTitle);
             description = (TextView) itemView.findViewById(R.id.playlistDescription);
             icon = (ImageView) itemView.findViewById(R.id.playlistIcon);
             publishedDate = (TextView) itemView.findViewById(R.id.playlistPublishedDate);
-            numberOfViews = (TextView) itemView.findViewById(R.id.playlistNumberOfVideos);
+            numberOfVideos = (TextView) itemView.findViewById(R.id.playlistNumberOfVideos);
         }
-
+/*
         @Override
         public void onClick(View v) {
             VideoInformationModel current = (VideoInformationModel) data.get(getAdapterPosition());
@@ -87,5 +87,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
             context.startActivity(intent);
 //            context.startActivity(new Intent(context, LoginActivity.class));
         }
+    */
     }
 }

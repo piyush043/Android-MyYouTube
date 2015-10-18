@@ -1,15 +1,8 @@
 package com.pbansal.myyoutube;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Joiner;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Playlist;
@@ -79,27 +72,29 @@ public class YoutubeConnect {
 
             //To Get List of Playlist of Authorized Users
             List<Playlist> results = getAllPlaylists();
-            for (Playlist result : results) {
-                if (result.getSnippet().getTitle().equals(playlistName)) {
-                    playlistId = result.getId();
-                    playlist = result;
-                    break;
+            if (results != null) {
+                for (Playlist result : results) {
+                    if (result.getSnippet().getTitle().equals(playlistName)) {
+                        playlistId = result.getId();
+                        playlist = result;
+                        break;
+                    }
                 }
-            }
-            if (playlist != null) {
-                //To get List of Videos of a Particular Playlist
-                PlaylistItemListResponse playlistItemListResponse = youtube.playlistItems()
-                        .list("id, snippet, contentDetails")
-                        .setPlaylistId(playlistId)
-                        .setFields("items(contentDetails/videoId,snippet/title,snippet/publishedAt),nextPageToken,pageInfo")
-                        .setMaxResults((long) 10)
-                        .execute();
-                List<PlaylistItem> playlistItemListResponseItems = playlistItemListResponse.getItems();
-                List<String> videoIds = new ArrayList<String>();
-                for (PlaylistItem result : playlistItemListResponseItems) {
-                    videoIds.add(result.getContentDetails().getVideoId());
+                if (playlist != null) {
+                    //To get List of Videos of a Particular Playlist
+                    PlaylistItemListResponse playlistItemListResponse = youtube.playlistItems()
+                            .list("id, snippet, contentDetails")
+                            .setPlaylistId(playlistId)
+                            .setFields("items(contentDetails/videoId,snippet/title,snippet/publishedAt),nextPageToken,pageInfo")
+                            .setMaxResults((long) 10)
+                            .execute();
+                    List<PlaylistItem> playlistItemListResponseItems = playlistItemListResponse.getItems();
+                    List<String> videoIds = new ArrayList<String>();
+                    for (PlaylistItem result : playlistItemListResponseItems) {
+                        videoIds.add(result.getContentDetails().getVideoId());
+                    }
+                    return getVideoInformation(videoIds);
                 }
-                return getVideoInformation(videoIds);
             }
             return null;
         } catch (IOException e) {
@@ -150,13 +145,13 @@ public class YoutubeConnect {
             return results;
         } catch (IOException e) {
             e.printStackTrace();
-            return  null;
+            return null;
         }
     }
 
     public String insertPlaylistItem(String playlistId, String videoId) {
 
-        if(!playlistId.isEmpty()) {
+        if (!playlistId.isEmpty()) {
             // Define a resourceId that identifies the video being added to the
             // playlist.
             ResourceId resourceId = new ResourceId();
@@ -191,12 +186,11 @@ public class YoutubeConnect {
                 System.out.println(" - Posted: " + returnedPlaylistItem.getSnippet().getPublishedAt());
                 System.out.println(" - Channel: " + returnedPlaylistItem.getSnippet().getChannelId());
                 return returnedPlaylistItem.getId();
-            }
-            catch (IOException e){
+            } catch (IOException e) {
                 Log.e(TAG, e.getMessage());
                 return null;
             }
-        }else{
+        } else {
             return null;
         }
 

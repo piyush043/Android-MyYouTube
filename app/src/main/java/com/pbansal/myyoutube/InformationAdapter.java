@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.api.services.youtube.model.Playlist;
@@ -62,7 +63,7 @@ public class InformationAdapter extends RecyclerView.Adapter<InformationAdapter.
 
     @Override
     public int getItemCount() {
-        if(data!=null)
+        if (data != null)
             return data.size();
         else
             return 0;
@@ -74,6 +75,7 @@ public class InformationAdapter extends RecyclerView.Adapter<InformationAdapter.
         TextView title, description, publishedDate, numberOfViews;
         ToggleButton toggleFavorite;
 
+
         public MyViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
@@ -83,22 +85,22 @@ public class InformationAdapter extends RecyclerView.Adapter<InformationAdapter.
             publishedDate = (TextView) itemView.findViewById(R.id.listPublishedDate);
             numberOfViews = (TextView) itemView.findViewById(R.id.listNumberOfViews);
             toggleFavorite = (ToggleButton) itemView.findViewById(R.id.listToggleFavoriteBtn);
-            toggleFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            toggleFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(isChecked){
-                        YoutubeConnect yc = new YoutubeConnect();
-                        VideoInformationModel video = (VideoInformationModel)data.get(getAdapterPosition());
+                    if (isChecked) {
+//                        YoutubeConnect yc = new YoutubeConnect();
+                        VideoInformationModel video = (VideoInformationModel) data.get(getAdapterPosition());
                         String videoId = video.getId();
-                        String playlistId = "PLp5jGxpQLK1VNmnUBUHJ4SemmfuzYnHgq";
+
                         try {
-                            new InsertVideo().execute(playlistId,videoId);
+                            new InsertVideo().execute(videoId);
                         } catch (Exception e) {
-                            Log.e("Error---" ,e.getMessage());
+                            Log.e("Error---", e.getMessage());
                         }
 
-                    }else {
+                    } else {
 
                     }
                 }
@@ -114,7 +116,7 @@ public class InformationAdapter extends RecyclerView.Adapter<InformationAdapter.
             intent.putExtra("VIDEO_TITLE", current.getTitle());
             intent.putExtra("VIDEO_DESCRIPTION", current.getDescription());
             intent.putExtra("VIDEO_PUB_DATE", current.getPublishedDate());
-            intent.putExtra("VIDEO_VIEWS",current.getNumberOfViews());
+            intent.putExtra("VIDEO_VIEWS", current.getNumberOfViews());
             context.startActivity(intent);
         }
     }
@@ -124,7 +126,21 @@ public class InformationAdapter extends RecyclerView.Adapter<InformationAdapter.
         @Override
         protected String doInBackground(String... params) {
             YoutubeConnect yc = new YoutubeConnect();
-            return yc.insertPlaylistItem(params[0], params[1]);
+            String playlistName = "SJSU-CMPE-277";
+            String playlistId = "";
+            List<Playlist> playlists = yc.getAllPlaylists();
+            for (Playlist result : playlists) {
+                if (result.getSnippet().getTitle().equals(playlistName)) {
+                    playlistId = result.getId();
+                    break;
+                }
+            }
+            if (!playlistId.isEmpty()) {
+                return yc.insertPlaylistItem(playlistId, params[0]);
+            }else{
+                Toast.makeText(context, "Playlist named " + playlistName + " not found.", Toast.LENGTH_LONG).show();
+            }
+            return null;
         }
 
         @Override
